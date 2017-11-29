@@ -1,0 +1,356 @@
+package pac3;
+
+import java_cup.*;
+import java_cup.runtime.*;
+import pac3.*;
+import pac3.utils.*;
+
+
+import java.io.*;
+import java.util.*;
+
+
+parser code {:
+	
+	
+		public static ArrayList parameter;
+		public static ArrayList variables;
+		
+		
+		public static Data datVar;
+		public static Data datPam;
+		public static Data datAttrib;
+		
+		public static int errorsAnal;
+		
+		public static int errorsSeman;
+		
+		public static int id_prod;
+		public static String iPar;
+		
+		
+		public static ArrayList results;
+		
+		public static void printResults(int erroresLexicos){
+			
+			System.out.println("RESUME:");
+			System.out.println("Lexical errors count: " + erroresLexicos);
+			System.out.println("Syntactical errors count: " + errorsAnal);
+			System.out.println("Semantical errors count " + errorsSeman);
+			
+			System.out.println("Symbol table content: ");		
+			System.out.println(String.format("%10s\t(%10s\t%10s\t%10s\t%10s)","[KEY]","[IDENT]","[SOURCE]","[TYPE]","[SCOPE]"));
+	
+			Enumeration en = Collections.enumeration(results);
+			while(en.hasMoreElements()) {
+				Data dat = (Data) en.nextElement(); 
+				System.out.println(dat.toString());
+				
+			} 
+			
+		}
+		
+		
+		public static void setData(Data dat, ArrayList table){
+			table.add(dat);
+		}
+		
+		
+		public static void processHashToFinal(ArrayList parameter, ArrayList variables, ArrayList results, String name_class, String iParam, int id_prod){
+		
+		//parameters:			
+			
+			
+			
+			String scope = name_class;
+			String iP = "";
+			
+			if (iParam.equals("")){
+				scope+="(NULL)";
+				iP = "-";
+			}else{
+				scope+="("+iParam+")";
+				iP = iParam;
+			}
+			
+			
+			Enumeration en = Collections.enumeration(parameter);
+			
+			while(en.hasMoreElements()) { 
+				
+				Data dat = (Data)en.nextElement(); 
+				
+				dat.scope = scope;
+				dat.id = id_prod;
+				
+				if (!results.contains(dat)){
+					results.add(dat);	
+				}else{
+					errorsSeman++;
+				}
+		  	} 
+		  	
+		//variables:
+		
+			en = Collections.enumeration(variables);
+			
+			while(en.hasMoreElements()) { 
+				
+				Data dat = (Data)en.nextElement(); 
+				
+				dat.scope = scope;
+				dat.id = id_prod;
+				
+				if (!results.contains(dat)){
+					results.add(dat);	
+				}else{
+					//errorsSeman++;
+				}
+				
+		  	}
+		  	
+		  	
+		  //functions:	
+		  Data dat = new Data();
+		  dat.ident = name_class;
+		  dat.source = "CONSTRUCTOR";
+		  dat.type = iP;
+		  dat.scope = "-";
+		  dat.id = id_prod;
+		  
+		  if (!results.contains(dat)){
+		  	results.add(dat);
+		  }else{
+		  	errorsSeman++;
+		  } 
+		  
+		
+		}
+		
+
+		
+		public static void main(String[] args) throws Exception {
+		
+		System.out.println("------------------------------------------");
+		System.out.println("JLEX analisis semantico INI				  ");
+		System.out.println("------------------------------------------");
+	
+		if (args.length == 1){
+		
+			errorsAnal = 0;
+			errorsSeman = 0;
+			id_prod = 0;
+			
+			iPar = "";
+			
+			FileReader fr = new FileReader(new File(args[0]));
+			
+			results = new ArrayList();
+			parameter = new ArrayList();
+			variables = new ArrayList();
+			
+			datVar = new Data();
+			datPam = new Data();
+			datAttrib = new Data();
+			
+			Yylex yylex = new Yylex(fr);
+			Pac3Cup par = new Pac3Cup(yylex);
+			par.parse();
+			
+			System.out.println("fichero " + args[0] + " procesado! ");
+			printResults(yylex.contador);
+			
+		}else{
+			System.out.println("No hay los parametros necesarios");
+		}
+	
+	
+		System.out.println("------------------------------------------");
+		System.out.println("JLEX analisis semántico FIN				  ");
+		System.out.println("------------------------------------------");
+	
+	
+	}	
+	
+:};
+
+terminal TK_CLASS, TK_BEGIN, TK_END, TK_WORD, TK_NUMBER, TK_NUMBERMAS, TK_LITERAL;
+terminal TK_INTEGER, TK_PUBLIC, TK_PRIVATE, TK_STRING, TK_CONSTRUCTOR, TK_BOOLEAN;
+terminal TK_ASIG, TK_DOTCOMMA, TK_PAROPEN, TK_PARCLOSE, TK_COMMA, TK_OP;
+terminal TK_IF, TK_ELSE, TK_ENDIF, TK_THEN;
+
+non terminal file, program, global, attributes, procedures, function, parameters, param,  variables, var, cod, sumas, sum, ifefs;
+
+file ::= 	program file
+			|{: :};
+
+program ::= TK_CLASS TK_WORD:word TK_BEGIN global procedures TK_END 
+			|error {: Pac3Cup.errorsAnal++;  :}
+			|TK_CLASS error {: Pac3Cup.errorsAnal++;  :}
+			|TK_CLASS TK_WORD error {: Pac3Cup.errorsAnal++;  :};
+
+global ::= attributes global
+		   | {: :};
+		   
+attributes ::= TK_PUBLIC {: Pac3Cup.datAttrib.scope = "Public"; :}
+			   |TK_PRIVATE {: Pac3Cup.datAttrib.scope = "Private"; :}
+			   |TK_BOOLEAN {: 
+					Pac3Cup.datAttrib.type = "Boolean";
+				:}
+				|TK_INTEGER {: 
+				 	Pac3Cup.datAttrib.type = "Integer";
+				:}
+				|TK_STRING {:
+				 	Pac3Cup.datAttrib.type = "String";
+				:}
+				
+				|TK_WORD:word {:
+					String name = ((pac3.symbol)word).lex; 
+				 	Pac3Cup.datAttrib.ident = name;
+				 	Pac3Cup.datAttrib.source = "Attribute";
+				:}	
+				
+				|TK_COMMA {:
+					if (!Pac3Cup.results.contains(Pac3Cup.datAttrib)){
+						Pac3Cup.results.add(Pac3Cup.datAttrib);
+					}else{
+						Pac3Cup.errorsSeman++;
+					}
+					
+					String typeAux = Pac3Cup.datAttrib.type;
+					String scopeAux = Pac3Cup.datAttrib.scope;
+					Pac3Cup.datAttrib = new Data();
+					Pac3Cup.datAttrib.type = typeAux; 
+					Pac3Cup.datAttrib.scope = scopeAux;
+				:}
+				
+				|TK_DOTCOMMA {: 
+					if (!Pac3Cup.results.contains(Pac3Cup.datAttrib)){
+						Pac3Cup.results.add(Pac3Cup.datAttrib);
+					}else{
+						Pac3Cup.errorsSeman++;
+					}
+					Pac3Cup.datAttrib = new Data();
+				:}
+				|error {: Pac3Cup.errorsAnal++;  :};
+
+procedures ::= function procedures
+			   | {: :};
+			  
+function ::= TK_CONSTRUCTOR TK_WORD:word TK_PAROPEN parameters TK_PARCLOSE TK_BEGIN variables TK_END {:
+
+String name_class =  ((pac3.symbol)word).lex;
+Pac3Cup.processHashToFinal(Pac3Cup.parameter,Pac3Cup.variables,Pac3Cup.results,name_class,Pac3Cup.iPar,Pac3Cup.id_prod);
+Pac3Cup.id_prod++;
+Pac3Cup.iPar = "";
+Pac3Cup.parameter.clear();
+Pac3Cup.variables.clear();
+Pac3Cup.parameter = new ArrayList();
+Pac3Cup.variables = new ArrayList();
+:}
+|TK_CONSTRUCTOR error {: Pac3Cup.errorsAnal++;  :}
+|TK_CONSTRUCTOR TK_WORD error {: Pac3Cup.errorsAnal++;  :}
+|TK_CONSTRUCTOR TK_WORD TK_PAROPEN error {: Pac3Cup.errorsAnal++;  :};
+
+
+parameters ::= param parameters
+				|{: :};
+
+param ::= 		TK_INTEGER TK_WORD:word {: 
+										
+										String name =  ((pac3.symbol)word).lex; 
+										Pac3Cup.datPam.ident = name;
+										Pac3Cup.datPam.source = "Parameter";
+										Pac3Cup.datPam.type = "Integer";
+										Pac3Cup.setData(Pac3Cup.datPam, Pac3Cup.parameter);
+										Pac3Cup.datPam = new Data(); 
+										Pac3Cup.iPar += "I";
+										
+										:}
+				|TK_STRING TK_WORD:word {:
+				
+										String name =  ((pac3.symbol)word).lex; 
+										Pac3Cup.datPam.ident = name;
+										Pac3Cup.datPam.source = "Parameter";
+										Pac3Cup.datPam.type = "String";
+										Pac3Cup.setData(Pac3Cup.datPam, Pac3Cup.parameter);
+										Pac3Cup.datPam = new Data();
+										Pac3Cup.iPar += "S";	 
+											
+										:}
+				|TK_BOOLEAN TK_WORD:word {: 
+										
+										String name =  ((pac3.symbol)word).lex; 
+										Pac3Cup.datPam.ident = name;
+										Pac3Cup.datPam.source = "Parameter";
+										Pac3Cup.datPam.type = "Boolean";
+										Pac3Cup.setData(Pac3Cup.datPam, Pac3Cup.parameter);
+										Pac3Cup.datPam = new Data();
+										Pac3Cup.iPar += "B";
+										
+										 :}
+				|TK_COMMA {: :}
+				|error {: Pac3Cup.errorsAnal++;  :};		
+		
+variables ::= var variables
+			  |cod variables
+			  |{:  :};
+
+
+var ::=  TK_INTEGER {:  Pac3Cup.datVar.type = "Integer"; :}
+ 		 |TK_STRING {: Pac3Cup.datVar.type = "String"; :}
+ 		 |TK_BOOLEAN {:  Pac3Cup.datVar.type = "Boolean"; :}
+ 		 |TK_WORD:word {: 
+ 		                  String name =  ((pac3.symbol)word).lex; 
+ 		 				  Pac3Cup.datVar.ident = name; 
+ 		 			   :}
+ 		 |TK_COMMA {:  Pac3Cup.datVar.source = "Variable"; 
+ 		 			   Pac3Cup.setData(Pac3Cup.datVar, Pac3Cup.variables);  
+ 		 			   String type = Pac3Cup.datVar.type; 
+ 		 			   Pac3Cup.datVar = new Data();
+ 		 			   Pac3Cup.datVar.type = type;
+ 		 		   :}
+ 		 |TK_DOTCOMMA {:  Pac3Cup.datVar.source = "Variable"; 
+ 		 			      Pac3Cup.setData(Pac3Cup.datVar, Pac3Cup.variables);  
+ 		 			      String type = Pac3Cup.datVar.type; 
+ 		 			      Pac3Cup.datVar = new Data(); 
+ 		 			      Pac3Cup.datVar.type = type;
+ 		 			      
+ 		 				:}
+ 		 |error {: Pac3Cup.errorsAnal++;  :};
+ 		  
+cod   ::= TK_WORD TK_ASIG TK_WORD sumas TK_DOTCOMMA {: :}
+		  | TK_WORD TK_ASIG TK_NUMBER sumas TK_DOTCOMMA {: :}
+		  | TK_WORD TK_ASIG TK_NUMBERMAS sumas TK_DOTCOMMA {: :}
+		  | TK_WORD TK_ASIG TK_LITERAL sumas TK_DOTCOMMA {: :}
+		  | TK_IF TK_PAROPEN TK_WORD sumas TK_PARCLOSE TK_THEN ifefs TK_ENDIF {: :}
+		  | TK_IF TK_PAROPEN TK_NUMBER sumas TK_PARCLOSE TK_THEN ifefs TK_ENDIF {: :}
+		  | TK_IF TK_PAROPEN TK_NUMBERMAS sumas TK_PARCLOSE TK_THEN ifefs TK_ENDIF {: :}
+		  | TK_IF TK_PAROPEN TK_LITERAL sumas TK_PARCLOSE TK_THEN ifefs TK_ENDIF {: :}
+		  | TK_IF TK_PAROPEN TK_WORD sumas TK_PARCLOSE TK_THEN ifefs TK_ELSE ifefs TK_ENDIF {: :}
+		  | TK_IF TK_PAROPEN TK_NUMBER sumas TK_PARCLOSE TK_THEN ifefs TK_ELSE ifefs TK_ENDIF {: :}
+		  | TK_IF TK_PAROPEN TK_NUMBERMAS sumas TK_PARCLOSE TK_THEN ifefs TK_ELSE ifefs TK_ENDIF {: :}
+		  | TK_IF TK_PAROPEN TK_LITERAL sumas TK_PARCLOSE TK_THEN ifefs TK_ELSE ifefs TK_ENDIF {: :};
+
+
+
+ifefs ::= cod ifefs
+		  |error {: Pac3Cup.errorsAnal++;  :}
+		  |{: :};
+		  
+		
+
+sumas ::= sum sumas
+		  |{: :};
+
+sum ::= TK_OP TK_WORD
+		|TK_OP TK_NUMBER
+		|TK_NUMBERMAS
+		|TK_OP TK_LITERAL
+		|error {: Pac3Cup.errorsAnal++;  :};
+		 
+
+		  
+
+
+		  					

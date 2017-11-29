@@ -1,0 +1,13 @@
+CLASS, class, BEGIN, END, PUBLIC, PRIVATE,
+BOOLEAN, STRING, INTEGER, CONSTRUCTOR, IF,
+THEN, ELSE, ENDIF, 12345, -54321, +1234512345
+TRUE FALSE
+//comment
+//comment
+"hola que taaaal como te vaaaa"
+var1
+var2
+VAR1, VAR2,
+VAR1
+VAR2
+VAR2

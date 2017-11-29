@@ -1,0 +1,11 @@
+//res/prueba.cup/cup-compact-red=false
+//res/prueba.cup/cup-debug=false
+//res/prueba.cup/cup-expected-conflicts=0
+//res/prueba.cup/cup-no-positions=false
+//res/prueba.cup/cup-no-scanner=false
+//res/prueba.cup/cup-non-terms=false
+//res/prueba.cup/cup-output=src
+//res/prueba.cup/cup-parser-class=PruebaCup
+//res/prueba.cup/cup-symbols-class=PruebaSym
+//res/prueba.cup/cup-symbols-if=true
+eclipse.preferences.version=1

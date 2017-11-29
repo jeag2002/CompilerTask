@@ -1,0 +1,38 @@
+CLASS contact
+BEGIN
+INTEGER age;
+PUBLIC STRING name ;
+CONSTRUCTOR c1 ()
+BEGIN
+name = "";
+age = 0;
+END
+CONSTRUCTOR c2 (INTEGER a)
+BEGIN
+name = "";
+age = a;
+END
+CONSTRUCTOR c3 (STRING b)
+BEGIN
+name = b ;
+age = 0;
+END
+CONSTRUCTOR c4 (STRING c , INTEGER d)
+BEGIN
+name = c;
+age = d;
+END
+CONSTRUCTOR c5 (STRING e , STRING f, INTEGER g, INTEGER h)
+BEGIN
+//current year & month
+INTEGER cY, cM;
+cY = 2013;
+cM = 9;
+name = e + " " + f;
+IF (h > cM) THEN
+age = g - cY ;
+ELSE
+
+ENDIF
+END
+END

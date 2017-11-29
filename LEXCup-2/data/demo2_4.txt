@@ -1,0 +1,28 @@
+CLASS contact
+BEGIN
+INTEGER age;
+PUBLIC STRING name;
+//comentario de prueba clase
+CONSTRUCTOR c2 (INTEGER a)
+BEGIN
+a=a+2;
+b=b+2;
+END
+CONSTRUCTOR c4 (STRING c , INTEGER d)
+BEGIN
+//comentario dentro del constructor
+boolean a1,a2;
+if (a>b) then
+//comentario dentro del if
+a=a+1;
+b=b+1;
+c=c+1;
+else
+if (a1) then
+//comentario if2
+d=d+1;
+endif
+endif
+END
+END
+??????????????

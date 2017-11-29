@@ -1,0 +1,46 @@
+package pac1.parser;
+
+/*
+Análizador lexico que reconoce algunos tokens: 
+identificador, int, coma, punto y coma, 
+operadores aritmeticos + y - , el =
+*/
+ 
+ 
+%%
+ 
+%public  
+
+/* la clase generada será public 
+(la class solo es accesible en su propio paquete por defecto).*/
+
+%class scanClass   
+
+/*Le dice a jflex que genere el programa (la clase) en 
+java con nombre scanClass */
+
+%standalone  
+
+/* Crea una funcion main en la clase generada que espera el nombre de un
+ archivo de entrada en la linea de comando y luego corre el scanner en este
+  archivo de entrada. Los valores regresados por el scanner son ignorados, 
+  pero cualquier texto que no caza es impreso en la consola de java  
+*/
+ 
+%unicode    
+
+/* para scannear archivos de texto */
+
+TerminadorLinea = \r|\n|\r\n
+Espacio = {TerminadorLinea} | [ \t\f]
+ 
+%%
+ 
+"int"   { System.out.println("1,"+yytext()); }
+[a-zA-Z][a-zA-Z0-9_]*  { System.out.println("2,"+yytext()); }
+"+"        { System.out.println("3,"+yytext()); }
+"-"        { System.out.println("4,"+yytext()); }
+"="        { System.out.println("5,"+yytext()); }
+","        { System.out.println("6,"+yytext()); }
+";"        { System.out.println("7,"+yytext()); }
+{Espacio}         { /* ignoralo */ }

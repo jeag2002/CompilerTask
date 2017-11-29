@@ -1,0 +1,63 @@
+CLASS contact
+BEGIN
+INTEGER age;
+PUBLIC STRING name ;
+//-------------------------------
+//Error #1. duplicated attribute:
+private integer name ;
+//-------------------------------
+CONSTRUCTOR contact()
+BEGIN
+name = "";
+age = 0;
+END
+//-------------------------------
+//Error #2.a. duplicated constructor
+CONSTRUCTOR contact()
+BEGIN
+name = "";
+age = 0;
+END
+
+//-------------------------------
+CONSTRUCTOR contact(INTEGER a, string b)
+BEGIN
+name = "";
+age = 0;
+END
+//----------------------------------
+//Error #2.b. duplicated constructor
+CONSTRUCTOR contact(integer p1, string p2)
+BEGIN
+name = "";
+age = 0;
+END
+//----------------------------------
+
+//Error #3. duplicated parameter
+CONSTRUCTOR contact(boolean a, string a)
+BEGIN
+name = "";
+age = 0;
+END
+//-------------------------------
+CONSTRUCTOR contact(INTEGER a)
+BEGIN
+//-------------------------------
+//Error #4. duplicated variable
+String b;
+integer b;
+//-------------------------------
+name = "";
+age = 0;
+END
+CONSTRUCTOR contact(STRING a)
+BEGIN
+//-------------------------------
+//Error #5. duplicated variable parameter
+String a;
+//-------------------------------
+name = "";
+age = 0;
+END
+END

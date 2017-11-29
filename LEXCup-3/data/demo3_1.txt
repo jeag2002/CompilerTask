@@ -1,0 +1,55 @@
+CLASS contact
+BEGIN
+INTEGER age;
+PUBLIC STRING name ;
+private integer name ;
+
+CONSTRUCTOR contact()
+BEGIN
+name = "";
+age = 0;
+END
+
+CONSTRUCTOR contact()
+BEGIN
+name = "";
+age = 0;
+END
+
+CONSTRUCTOR contact(INTEGER a, string b)
+BEGIN
+name = "";
+age = 0;
+END
+
+CONSTRUCTOR contact(integer p1, string p2)
+BEGIN
+name = "";
+age = 0;
+END
+
+CONSTRUCTOR contact(boolean a, string a)
+BEGIN
+name = "";
+age = 0;
+END
+
+CONSTRUCTOR contact(INTEGER a)
+BEGIN
+String b;
+integer b;
+name = "";
+age = 0;
+END
+
+
+CONSTRUCTOR contact(STRING a)
+BEGIN
+String a;
+name = "";
+age = 0;
+END
+
+
+
+END

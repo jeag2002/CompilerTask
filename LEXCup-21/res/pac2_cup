@@ -1,0 +1,65 @@
+package pac2;
+
+import pac2.parser.*;
+import java_cup.runtime.*;
+
+parser code {:
+	
+	static parser Analysis;
+	static Integer number_errors = new Integer(0);
+
+	public static void main(String[] args) throws Exception {
+		
+		System.out.println("------------------------------------------");
+		System.out.println("JLEX analisis INI						  ");
+		System.out.println("------------------------------------------");
+	
+		if (args.length == 1){
+		
+			FileReader fr_M =  CreateFileReader(new File(args[0]));
+			
+		
+		}else{
+			System.out.println("No hay los parametros necesarios");
+		}
+	
+	
+		System.out.println("------------------------------------------");
+		System.out.println("JLEX analisis FIN						  ");
+		System.out.println("------------------------------------------");
+	
+	
+	}	
+	
+	public static FileReader CreateFileReader(File aIn) throws Exception{
+		
+		FileReader fr = null;
+		fr = new FileReader(aIn);
+		return fr;
+		
+	}
+	
+	public static void alexico(FileReader fichero){
+		
+		Pac2Sym scanner = new Pac2Sym(fichero);
+		Analysis = new parser(scanner);
+		Analysis.parse();
+	}
+:}
+
+
+terminal TK_CLASS, TK_BEGIN, TK_PUBLIC, TK_END, TK_PRIVATE, TK_BOOLEAN, TK_STRING, TK_WORD;
+terminal TK_INTEGER, TK_CONSTRUCTOR, TK_IF, TK_THEN, TK_ELSE, TK_ENDIF, TK_PLUS;
+terminal TK_MINUS, TK_MUL, TK_DIV, TK_AND, TK_OR, TK_EQUALS;
+terminal TK_MAJOR, TK_MINOR, TK_POW, TK_NO, TK_ASIG, TK_DOTCOMMA, TK_PARINI;
+terminal TK_PARFIN, TK_COMMA;
+
+non terminal program
+
+program ::= TK_CLASS TK_WORD TK_BEGIN TK_END {: System.out.println("Definicion de clase detectada"); :};
+
+
+
+
+
+

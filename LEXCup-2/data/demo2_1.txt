@@ -1,0 +1,7 @@
+CLASS pepe
+BEGIN
+END
+
+CLASS pepe1
+BEGIN
+END

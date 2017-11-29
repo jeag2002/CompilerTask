@@ -1,0 +1,11 @@
+CLASS pepeA
+BEGIN
+
+INTEGER age;
+PUBLIC STRING name;
+
+END
+
+CLASS pepeC
+BEGIN
+END
